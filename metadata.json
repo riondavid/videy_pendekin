@@ -1,0 +1,8 @@
+{
+  "name": "Pendekin",
+  "description": "Short link generator panel with bulk generation (up to 20 links), bulk copy, temporary session results, and high-tech dark analytics dashboard.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
