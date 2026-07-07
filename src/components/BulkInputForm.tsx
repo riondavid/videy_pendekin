@@ -11,8 +11,8 @@ interface BulkInputFormProps {
 export default function BulkInputForm({ onGenerate, generating }: BulkInputFormProps) {
   const [activeTab, setActiveTab] = useState<"form" | "bulk">("form");
   
-  // Form Mode State (individual rows)
-  const [formUrls, setFormUrls] = useState<string[]>([""]);
+  // Form Mode State (individual rows with 10 default rows)
+  const [formUrls, setFormUrls] = useState<string[]>(Array(10).fill(""));
   
   // Bulk Mode State (textarea)
   const [bulkText, setBulkText] = useState<string>("");
@@ -50,9 +50,44 @@ export default function BulkInputForm({ onGenerate, generating }: BulkInputFormP
 
   // Clear Form state
   const handleReset = () => {
-    setFormUrls([""]);
+    setFormUrls(Array(10).fill(""));
     setBulkText("");
     setError(null);
+  };
+
+  // Handle auto-splitting when multiple links are pasted into a row
+  const handlePaste = (index: number, e: React.ClipboardEvent<HTMLInputElement>) => {
+    const pastedText = e.clipboardData.getData("text");
+    
+    // Split by newlines, commas, or tabs
+    let items = pastedText
+      .split(/[\r\n\t,]+/)
+      .map(item => item.trim())
+      .filter(item => item !== "");
+
+    // If it's a single line but contains spaces, check if they are multiple URLs separated by space
+    if (items.length === 1 && pastedText.includes(" ")) {
+      items = pastedText
+        .split(/\s+/)
+        .map(item => item.trim())
+        .filter(item => item !== "");
+    }
+
+    if (items.length > 1) {
+      e.preventDefault();
+      
+      const updated = [...formUrls];
+      // Replace the pasted input row with the first item, and insert subsequent items
+      updated.splice(index, 1, ...items);
+      
+      if (updated.length > 20) {
+        setError("Maksimal 20 link dapat digenerate sekaligus. Link selebihnya dipotong.");
+        setFormUrls(updated.slice(0, 20));
+      } else {
+        setFormUrls(updated);
+        setError(null);
+      }
+    }
   };
 
   // Form submission handler
@@ -178,6 +213,7 @@ export default function BulkInputForm({ onGenerate, generating }: BulkInputFormP
                     type="text"
                     value={url}
                     onChange={(e) => handleRowChange(index, e.target.value)}
+                    onPaste={(e) => handlePaste(index, e)}
                     placeholder="Masukkan tautan panjang..."
                     className="flex-grow bg-black/40 border border-white/5 rounded-xl px-4 py-3 text-sm text-slate-100 placeholder:opacity-20 focus:outline-none focus:border-cyan-500/50 font-mono transition-all"
                   />

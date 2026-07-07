@@ -95,3 +95,15 @@ export function truncateUrl(url: string, maxLength: number = 45): string {
   if (url.length <= maxLength) return url;
   return url.substring(0, maxLength) + "...";
 }
+
+/**
+ * Wraps a promise with a timeout so it doesn't hang indefinitely.
+ */
+export function withTimeout<T>(promise: Promise<T>, ms = 5000, errorMsg = "Koneksi timeout"): Promise<T> {
+  return Promise.race([
+    promise,
+    new Promise<never>((_, reject) =>
+      setTimeout(() => reject(new Error(errorMsg)), ms)
+    ),
+  ]);
+}

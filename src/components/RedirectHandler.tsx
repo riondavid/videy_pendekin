@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { doc, getDoc, updateDoc, increment } from "firebase/firestore";
 import { db } from "../firebase";
+import { withTimeout } from "../utils";
 import { ShieldAlert, Compass, Globe, ArrowRight } from "lucide-react";
 import { motion } from "motion/react";
 
@@ -26,7 +27,11 @@ export default function RedirectHandler({ shortCode }: RedirectHandlerProps) {
     async function performRedirect() {
       try {
         const docRef = doc(db, "links", shortCode);
-        const docSnap = await getDoc(docRef);
+        const docSnap = await withTimeout(
+          getDoc(docRef),
+          7000,
+          "Koneksi ke Firebase Firestore timeout. Pastikan Firestore Database diaktifkan di Firebase Console."
+        );
 
         if (docSnap.exists()) {
           const data = docSnap.data();

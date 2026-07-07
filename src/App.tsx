@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { collection, getDocs, setDoc, deleteDoc, doc, serverTimestamp, query, orderBy, limit } from "firebase/firestore";
 import { db } from "./firebase";
 import { ShortLink, AnalyticsSummary } from "./types";
-import { generateShortCode, normalizeUrl } from "./utils";
+import { generateShortCode, normalizeUrl, withTimeout } from "./utils";
 import { ShieldCheck, Compass, Link2, Share2, AlertTriangle, Zap, Lock, MessageCircle } from "lucide-react";
 import { motion } from "motion/react";
 
@@ -60,7 +60,11 @@ export default function App() {
     setErrorBanner(null);
     try {
       const linksQuery = query(collection(db, "links"), orderBy("createdAt", "desc"), limit(300));
-      const querySnapshot = await getDocs(linksQuery);
+      const querySnapshot = await withTimeout(
+        getDocs(linksQuery),
+        7000,
+        "Koneksi ke Firebase Firestore timeout. Pastikan Anda telah mengaktifkan Firestore Database di Firebase Console Anda dan aturan keamanannya (Rules) mengizinkan akses baca."
+      );
       
       const loadedLinks: ShortLink[] = [];
       let totalClicksCount = 0;
@@ -133,7 +137,11 @@ export default function App() {
         };
 
         // Write directly to Firestore using shortCode as Document ID
-        await setDoc(docRef, payload);
+        await withTimeout(
+          setDoc(docRef, payload),
+          7000,
+          "Koneksi ke Firebase Firestore timeout. Pastikan Anda telah mengaktifkan Firestore Database di Firebase Console untuk proyek 'viideyy2' dan aturan keamanannya (Rules) mengizinkan akses tulis."
+        );
 
         newlyCreated.push({
           id: docId,
