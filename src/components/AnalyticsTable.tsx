@@ -22,7 +22,7 @@ export default function AnalyticsTable({ links, loading, onRefresh, onDeleteLink
 
   // Handle individual short link copy inside table
   const handleCopyLink = (code: string) => {
-    const url = `http://videy.nfy.fyi/${code}`;
+    const url = `https://videy.nfy.fyi/${code}`;
     navigator.clipboard.writeText(url);
     setCopiedCode(code);
     setTimeout(() => setCopiedCode(null), 1500);

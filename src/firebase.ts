@@ -14,8 +14,8 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
-// Initialize Firestore
-export const db = getFirestore(app);
+// Initialize Firestore with the custom database ID 'viideyy2'
+export const db = getFirestore(app, "viideyy2");
 
 // Simple connection check as requested by system rules
 async function testConnection() {

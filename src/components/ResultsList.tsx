@@ -16,7 +16,7 @@ export default function ResultsList({ links, onClear }: ResultsListProps) {
   if (links.length === 0) return null;
 
   // Domain configurations
-  const prodBase = "http://videy.nfy.fyi";
+  const prodBase = "https://videy.nfy.fyi";
   const devBase = window.location.origin;
 
   const getShortUrl = (code: string) => {
